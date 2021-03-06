@@ -1,0 +1,46 @@
+set mJson to do shell script "curl -s 'https://api.coingecko.com/api/v3/simple/price?ids=yieldwatch&vs_currencies=usd&include_24hr_change=true'"
+set AppleScript's text item delimiters to {"\""}
+set keyValueList to (every text item in mJson) as list
+set AppleScript's text item delimiters to ""
+
+
+set theKeyValuePrice to item 5 of keyValueList
+set theKeyValuePrice to RemoveFromString(":", theKeyValuePrice)
+set usdPrice to RemoveFromString(",", theKeyValuePrice)
+set usdPrice to RoundImperialNumberToTwoDecimals(usdPrice)
+
+set theKeyValueChange to item 7 of keyValueList
+set theKeyValueChange to RemoveFromString(":", theKeyValueChange)
+set theKeyValueChange to RemoveFromString("}", theKeyValueChange)
+set change to RoundImperialNumberToTwoDecimals(theKeyValueChange)
+
+set arrow to " ▲"
+
+if change < 0 then
+	set arrow to " ▼"
+end if
+
+set unformatedValue to "$ " & usdPrice & " " & arrow & " " & change & "%"
+
+
+on RoundImperialNumberToTwoDecimals(txt)
+	set AppleScript's text item delimiters to "."
+	set decimals to text item 2 of txt
+	if (count decimals) < 2 then
+		set decimals to decimals & "0"
+	end if
+	set decimals to (text 1 thru 2 of decimals)
+	set theNumber to text item 1 of txt & "." & decimals
+	set AppleScript's text item delimiters to ""
+	return theNumber
+end RoundImperialNumberToTwoDecimals
+
+
+-- remove character or string from given string
+on RemoveFromString(CharOrString, txt)
+	set AppleScript's text item delimiters to CharOrString
+	set temp to txt's text items
+	set AppleScript's text item delimiters to ""
+	return temp as text
+end RemoveFromString
+

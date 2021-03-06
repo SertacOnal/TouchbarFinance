@@ -1,0 +1,42 @@
+set mJson to do shell script "curl -s 'https://api.genelpara.com/embed/altin.json'"
+set AppleScript's text item delimiters to {"satis"}
+set keyValueList to (every text item in mJson) as list
+set AppleScript's text item delimiters to ""
+
+
+set theKeyValuePrice to item 2 of keyValueList
+set AppleScript's text item delimiters to {"\""}
+set keyValueList to (every text item in theKeyValuePrice) as list
+set AppleScript's text item delimiters to ""
+set tryPrice to item 3 of keyValueList
+set tryPrice to RoundImperialNumberToTwoDecimals(tryPrice)
+
+set AppleScript's text item delimiters to {"degisim"}
+set keyValueList to (every text item in mJson) as list
+set AppleScript's text item delimiters to ""
+
+set theKeyValuePrice to item 2 of keyValueList
+set AppleScript's text item delimiters to {"\""}
+set keyValueList to (every text item in theKeyValuePrice) as list
+set AppleScript's text item delimiters to ""
+set change to item 3 of keyValueList
+
+set arrow to " ▲"
+
+if change < 0 then
+	set arrow to " ▼"
+end if
+
+set unformatedValue to "₺ " & tryPrice & " " & arrow & " " & change & "%"
+
+on RoundImperialNumberToTwoDecimals(txt)
+	set AppleScript's text item delimiters to "."
+	set decimals to text item 2 of txt
+	if (count decimals) < 2 then
+		set decimals to decimals & "0"
+	end if
+	set decimals to (text 1 thru 2 of decimals)
+	set theNumber to text item 1 of txt & "." & decimals
+	set AppleScript's text item delimiters to ""
+	return theNumber
+end RoundImperialNumberToTwoDecimals
